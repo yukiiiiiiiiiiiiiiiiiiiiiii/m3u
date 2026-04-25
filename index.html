@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>随机图片</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #111;
+            overflow: hidden;
+        }
+        #img {
+            max-width: 96vw;
+            max-height: 96vh;
+            object-fit: contain;
+            border-radius: 6px;
+            box-shadow: 0 0 40px #0006;
+        }
+    </style>
+</head>
+<body>
+    <img id="img" alt="加载中...">
+
+<script>
+// 自动获取文件夹里所有图片
+async function getImages(folder) {
+  try {
+    const res = await fetch(`./${folder}/`);
+    const text = await res.text();
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(text, 'text/html');
+    
+    const files = Array.from(doc.querySelectorAll('a'))
+      .map(a => a.href)
+      .filter(href => 
+        href.includes(`/${folder}/`) && 
+        /\.(jpg|jpeg|png|webp|gif)$/i.test(href)
+      );
+    return files;
+  } catch (e) {
+    console.error('读取图片失败', e);
+    return [];
+  }
+}
+
+// 随机显示图片
+async function show() {
+  const imgEl = document.getElementById('img');
+  const isLandscape = window.innerWidth > window.innerHeight;
+  const folder = isLandscape ? 'landscape' : 'portrait';
+  
+  const images = await getImages(folder);
+  if (images.length === 0) return;
+  
+  const random = images[Math.floor(Math.random() * images.length)];
+  imgEl.src = random;
+}
+
+window.onload = show;
+</script>
+</body>
+</html>

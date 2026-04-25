@@ -16,56 +16,38 @@
             justify-content: center;
             align-items: center;
             background: #111;
-            overflow: hidden;
         }
         #img {
-            max-width: 96vw;
-            max-height: 96vh;
+            max-width: 95vw;
+            max-height: 95vh;
             object-fit: contain;
-            border-radius: 6px;
-            box-shadow: 0 0 40px #0006;
         }
     </style>
 </head>
 <body>
-    <img id="img" alt="加载中...">
+<img id="img" alt="">
 
 <script>
-// 自动获取文件夹里所有图片
-async function getImages(folder) {
-  try {
-    const res = await fetch(`./${folder}/`);
-    const text = await res.text();
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(text, 'text/html');
-    
-    const files = Array.from(doc.querySelectorAll('a'))
-      .map(a => a.href)
-      .filter(href => 
-        href.includes(`/${folder}/`) && 
-        /\.(jpg|jpeg|png|webp|gif)$/i.test(href)
-      );
-    return files;
-  } catch (e) {
-    console.error('读取图片失败', e);
-    return [];
-  }
-}
+// ======================================
+// 你只需要在这里添加你的图片名字！
+// ======================================
+const landscapeImages = [
+  "landscape/1.jpg"
+  // 以后加图：直接加一行 "landscape/4.jpg"
+];
 
-// 随机显示图片
-async function show() {
-  const imgEl = document.getElementById('img');
-  const isLandscape = window.innerWidth > window.innerHeight;
-  const folder = isLandscape ? 'landscape' : 'portrait';
-  
-  const images = await getImages(folder);
-  if (images.length === 0) return;
-  
-  const random = images[Math.floor(Math.random() * images.length)];
-  imgEl.src = random;
-}
+const portraitImages = [
+  "portrait/1.jpg"
+  // 以后加图：直接加一行 "portrait/4.jpg"
+];
 
-window.onload = show;
+// 自动判断横竖屏
+const isLandscape = window.innerWidth > window.innerHeight;
+const images = isLandscape ? landscapeImages : portraitImages;
+const randomImg = images[Math.floor(Math.random() * images.length)];
+
+// 显示图片
+document.getElementById("img").src = randomImg;
 </script>
 </body>
 </html>
